@@ -2,6 +2,7 @@ import argparse
 import requests
 import csv
 import importlib.resources
+from pathlib import Path
 from time import sleep
 import math
 
@@ -138,20 +139,25 @@ def load_args():
     if args.dehashed_key is True:
         args.dehashed_key = input("DeHashed API Key: ")
 
-    # Read from config file
-    with importlib.resources.open_text('dehashapitool', 'config.txt') as file:
-        dehashed_key = file.read().splitlines()[0]
-        if not args.dehashed_key:
-            if dehashed_key == "<api-key>":
-                args.dehashed_key = input("DeHashed API Key: ")
-            else:
-                args.dehashed_key = dehashed_key
+    # Resolve the path to the bundled config file (may not yet exist on first run)
+    config_path = Path(str(importlib.resources.files('dehashapitool') / 'config.txt'))
+
+    # Read from config file, tolerating a missing or empty file on first run (#13)
+    dehashed_key = "<api-key>"
+    if config_path.is_file():
+        lines = config_path.read_text().splitlines()
+        if lines:
+            dehashed_key = lines[0]
+
+    if not args.dehashed_key:
+        if dehashed_key == "<api-key>":
+            args.dehashed_key = input("DeHashed API Key: ")
+        else:
+            args.dehashed_key = dehashed_key
 
     # Write to config file
     if args.store_key:
-        with importlib.resources.path('dehashapitool', 'config.txt') as config_path:
-            with open(config_path, 'w') as file:
-                file.write(f"{args.dehashed_key}\n")
+        config_path.write_text(f"{args.dehashed_key}\n")
 
     # Check that at least one search criteria argument is provided
     search_criteria = ['username', 'email', 'hashed_password', 'ip_address', 'vin', 'name', 'address', 'phone', 'password', 'domain']
