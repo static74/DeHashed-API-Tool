@@ -7,6 +7,8 @@ A command-line tool to query the Dehashed API. Easily search for various paramet
 - Fetch unique password results.
 - Silent output mode for minimal console output.
 
+> **Also see [`claude-skill/`](./claude-skill/)** — a [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) skill that talks directly to the DeHashed v2 API for credit-conscious investigative workflows (broad-then-prune queries, xlsx reports, PI-style intake). It reuses the API key stored by this tool's `--store-key` flag. Install with `./claude-skill/install.sh`.
+
 ## Installation
 ### Prerequisites
 1. Ensure you have Python 3.x installed.
